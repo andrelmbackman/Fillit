@@ -6,7 +6,7 @@
 /*   By: abackman <abackman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/11 12:25:09 by abackman          #+#    #+#             */
-/*   Updated: 2022/01/11 14:20:05 by abackman         ###   ########.fr       */
+/*   Updated: 2022/01/11 15:52:08 by abackman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,18 @@
 
 t_tetrimino	*read_file(int fd)
 {
-	char		buf[21];
+	char		buf[545];
 	t_tetrimino	*head;
 	t_tetrimino	*tmp;
 	size_t		r_bytes;
 
-	r_bytes = read(fd, buf, 21);
-	while (r_bytes >= 20)
-	{
-		tmp = check_tetri(buf);
-		if (!tmp)
-			break ;
-		else
-			tmp = add_tetri(head, tmp);
-		r_bytes = read(fd, buf, 21);
-	}
-	if (!tmp)
+	r_bytes = read(fd, buf, 545);
+	if (r_bytes < 20 || r_bytes > 545)
+		return (NULL);
+	tmp = check_tetri(buf);
+	if (tmp)
+		tmp = add_tetri(head, tmp);
+	else
 	{
 		ft_putstr("error\n");
 		ft_lstdel(head);
@@ -58,6 +54,8 @@ int	main(int argc, char **argv)
 			tetris = read_file(fd);
 		if (tetris)
 			solve_map(tetris);
+		else
+			ft_putstr("error\n");
 	}
 	close(fd);
 	return (0);
