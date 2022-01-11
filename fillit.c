@@ -6,7 +6,7 @@
 /*   By: abackman <abackman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/11 12:25:09 by abackman          #+#    #+#             */
-/*   Updated: 2022/01/11 15:52:08 by abackman         ###   ########.fr       */
+/*   Updated: 2022/01/11 18:26:33 by abackman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ t_tetrimino	*read_file(int fd)
 	r_bytes = read(fd, buf, 545);
 	if (r_bytes < 20 || r_bytes > 545)
 		return (NULL);
+	buf[r_bytes] = '\0';
 	tmp = check_tetri(buf);
 	if (tmp)
 		tmp = add_tetri(head, tmp);
