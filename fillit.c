@@ -6,7 +6,7 @@
 /*   By: abackman <abackman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/11 12:25:09 by abackman          #+#    #+#             */
-/*   Updated: 2022/01/14 14:15:59 by abackman         ###   ########.fr       */
+/*   Updated: 2022/01/14 16:06:54 by abackman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,27 +32,40 @@ void	ft_putstr(const char *s)
 	}
 }
 
-char	*del_newline(char *str)
+t_map	*fill_dots(t_map *map, int sqroot)
 {
-	char	*rev;
-	int		i;
-	int		j;
+	int	i;
 
 	i = 0;
-	j = 15;
-
-	rev = (char *)malloc(16 * sizeof(char));
-	if (!rev)
-		return (NULL);
-	rev[16] = '\0';
-	while (j >= 0)
+	while (i < sqroot)
 	{
-		if (str[i] == '\n')
-			i++;
-		rev[j--] = str[i++];
+		map->map[i] = ft_strnew(sqroot);
+		ft_memset(map->map, '.', sqroot);
+		i++;
 	}
-	return (rev);
+	return (map);
 }
+
+t_map	*create_map(t_piece *pieces)
+{
+	int		mapsize;
+	int		sqroot;
+	t_map	*map;
+
+	mapsize = 4 * (pieces->last_letter - 'A');
+	sqroot = 2;
+	while (sqroot * sqroot < mapsize)
+		sqroot++;
+	map = (t_map *)malloc(sizeof (t_map));
+	if (!map)
+		return (NULL);
+	map->map = (char **)malloc(sqroot * sizeof(char *));
+	if (!map->map)
+		return (NULL);
+	else
+		return (fill_dots(map, sqroot));
+}
+	
 
 void	shift_piece(t_piece *piece)
 {
@@ -171,6 +184,7 @@ t_piece	*read_file(size_t r_bytes, char *buf)
 		i += 21;
 	}
 	next->next = NULL;
+	head->last_letter = next->letter;
 	return (head);
 }
 /*
