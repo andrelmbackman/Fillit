@@ -6,7 +6,7 @@
 /*   By: abackman <abackman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/11 12:25:09 by abackman          #+#    #+#             */
-/*   Updated: 2022/01/12 16:11:56 by abackman         ###   ########.fr       */
+/*   Updated: 2022/01/14 14:15:59 by abackman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,91 @@ void	ft_putstr(const char *s)
 	}
 }
 
-t_tetrimino *check_tetri(char *buf, size_t r_bytes)
+char	*del_newline(char *str)
+{
+	char	*rev;
+	int		i;
+	int		j;
+
+	i = 0;
+	j = 15;
+
+	rev = (char *)malloc(16 * sizeof(char));
+	if (!rev)
+		return (NULL);
+	rev[16] = '\0';
+	while (j >= 0)
+	{
+		if (str[i] == '\n')
+			i++;
+		rev[j--] = str[i++];
+	}
+	return (rev);
+}
+
+void	shift_piece(t_piece *piece)
+{
+	while (piece->x_cord[0] != 0 && piece->x_cord[1] != 0 && \
+	piece->x_cord[2] != 0 && piece->x_cord[3] != 0)
+	{
+		piece->x_cord[0] -= 1;
+		piece->x_cord[1] -= 1;
+		piece->x_cord[2] -= 1;
+		piece->x_cord[3] -= 1;
+	}
+	while (piece->y_cord[0] != 0 && piece->y_cord[1] != 0 && \
+	piece->y_cord[2] != 0 && piece->y_cord[3] != 0)
+	{
+		piece->y_cord[0] -= 1;
+		piece->y_cord[1] -= 1;
+		piece->y_cord[2] -= 1;
+		piece->y_cord[3] -= 1;
+	}
+}
+
+t_piece *make_piece(char *buf, char letter)
+{
+	t_piece		*tetri;
+	int			i;
+	int			x;
+	int			y;
+
+	i = 0;
+	x = 0;
+	y = 0;
+	tetri = (t_piece *)malloc(sizeof(t_piece));
+	if (tetri == NULL)
+		return (NULL);
+	while (i < 20)
+	{
+		if (buf[i] == '#')
+		{
+			if (i >= 5)
+				tetri->x_cord[x++] = i % 5;
+			else
+				tetri->x_cord[x++] = i;
+			tetri->y_cord[y++] = i / 5;
+		}
+		i++;
+	}
+	printf(" %i %i %i %i %i %i %i %i\n", tetri->x_cord[0], tetri->y_cord[0], tetri->x_cord[1], tetri->y_cord[1], tetri->x_cord[2], tetri->y_cord[2], tetri->x_cord[3], tetri->y_cord[3]);
+	shift_piece(tetri);
+	tetri->letter = letter;
+	printf(" %i %i %i %i %i %i %i %i\n", tetri->x_cord[0], tetri->y_cord[0], tetri->x_cord[1], tetri->y_cord[1], tetri->x_cord[2], tetri->y_cord[2], tetri->x_cord[3], tetri->y_cord[3]);
+	printf("letter: %c\n", tetri->letter);
+	return (tetri);
+}
+
+int	check_links(char *buf, int i, int links)
+{
+	if (buf[i + 1] == '#' && (i + 1) < 20)
+		links++;
+	if (buf[i + 5] == '#' && (i + 5) < 20)
+		links++;
+	return (links);
+}
+
+t_piece *check_tetri(char *buf, char letter)
 {
 	int	blocks;
 	int	links;
@@ -50,40 +134,43 @@ t_tetrimino *check_tetri(char *buf, size_t r_bytes)
 		if (buf[i] == '#')
 		{
 			blocks++;
-			if (buf[i + 1] == '#' && (i + 1) < 20)
-				links++;
-			if (buf[i + 5] == '#' && (i + 5) < 20)
-				links++;
+			links = check_links(buf, i, links);
+			printf("links: %i\n", links);
 		}
 		i++;
 	}
 	printf("blocks: %i\nlinks: %i\nindex: %i\n", blocks, links, i);
+	if (blocks == 4 && (links == 3 || links == 4))
+		return (make_piece(buf, letter));
+	//else
 	return (NULL);
 }
 
-t_tetrimino	*read_file(int fd)
+t_piece	*read_file(size_t r_bytes, char *buf)
 {
-	char		buf[21];
-	t_tetrimino	*head;
-	t_tetrimino	*tmp;
-	size_t		r_bytes;
+	t_piece		*head;
+	t_piece		*next;
+	int			i;
+	char		letter;
 
-	r_bytes = read(fd, buf, 21);
-	while (r_bytes > 0)
+	i = 0;
+	letter = 'A';
+	while (i <= r_bytes)
 	{
-		if (r_bytes < 19)
-			return (NULL);
-		tmp = check_tetri(buf, r_bytes);
-		r_bytes = read(fd, buf, 21);
+		if (letter == 'A')
+		{
+			head = check_tetri(buf, letter);
+			next = head;
+		}
+		else
+		{
+			next->next = check_tetri(buf + i, letter);
+			next = next->next;
+		}
+		letter++;
+		i += 21;
 	}
-/*	if (tmp)
-		tmp = add_tetri(head, tmp);
-	else
-	{
-		ft_putstr("error\n");
-		ft_lstdel(head);
-	}
-	*/
+	next->next = NULL;
 	return (head);
 }
 /*
@@ -94,18 +181,26 @@ void	solve_map(t_tetrimino *tetris)
 */
 int	main(int argc, char **argv)
 {
+	char		buf[545];
 	int			fd;
-	t_tetrimino	*tetris;
+	size_t		r_bytes;
+	t_piece	*tetris;
 
 	if (argc != 2)
-		ft_putstr("usage: ./fillit tetrimino_file\n");
+		ft_putstr("usage: ./fillit source_file\n");
 	else
 	{
 		fd = open(argv[1], O_RDONLY);
 		if (fd < 0)
 			ft_putstr("error\n");
 		else
-			tetris = read_file(fd);
+		{
+			r_bytes = read(fd, buf, 545);
+			if (r_bytes > 544 || r_bytes < 19)
+				return (1);
+			buf[r_bytes] = '\0';
+			tetris = read_file(r_bytes, buf);
+		}
 		//if (tetris)
 		//	solve_map(tetris);
 		//else
