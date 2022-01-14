@@ -6,7 +6,7 @@
 /*   By: abackman <abackman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/11 12:25:09 by abackman          #+#    #+#             */
-/*   Updated: 2022/01/14 16:06:54 by abackman         ###   ########.fr       */
+/*   Updated: 2022/01/14 16:21:08 by abackman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,12 +187,7 @@ t_piece	*read_file(size_t r_bytes, char *buf)
 	head->last_letter = next->letter;
 	return (head);
 }
-/*
-void	solve_map(t_tetrimino *tetris)
-{
 
-}
-*/
 int	main(int argc, char **argv)
 {
 	char		buf[545];
