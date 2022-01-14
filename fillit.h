@@ -6,7 +6,7 @@
 /*   By: abackman <abackman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/11 12:25:49 by abackman          #+#    #+#             */
-/*   Updated: 2022/01/11 13:28:23 by abackman         ###   ########.fr       */
+/*   Updated: 2022/01/14 15:44:24 by abackman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,19 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <fcntl.h>
+# include <stdint.h>
 
-typedef struct t_tetrimino
+typedef struct s_piece
 {
-	int				pos[8];
+	char			piece[16];
+	int				x_cord[4];
+	int				y_cord[4];
 	char			letter;
-	struct s_list	*next;
-}	t_tetrimino;
+	char			last_letter;
+	struct s_piece	*next;
+}	t_piece;
 
-typedef struct t_map
+typedef struct s_map
 {
 	int		size;
 	char	**map;
