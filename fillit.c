@@ -6,7 +6,7 @@
 /*   By: abackman <abackman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/11 12:25:09 by abackman          #+#    #+#             */
-/*   Updated: 2022/01/14 16:21:08 by abackman         ###   ########.fr       */
+/*   Updated: 2022/01/17 15:03:58 by abackman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,25 +40,32 @@ t_map	*fill_dots(t_map *map, int sqroot)
 	while (i < sqroot)
 	{
 		map->map[i] = ft_strnew(sqroot);
-		ft_memset(map->map, '.', sqroot);
+		ft_memset(map->map[i], '.', sqroot);
 		i++;
 	}
 	return (map);
 }
 
-t_map	*create_map(t_piece *pieces)
+int	count_mapsize(t_piece *pieces)
 {
 	int		mapsize;
 	int		sqroot;
-	t_map	*map;
 
 	mapsize = 4 * (pieces->last_letter - 'A');
 	sqroot = 2;
 	while (sqroot * sqroot < mapsize)
 		sqroot++;
-	map = (t_map *)malloc(sizeof (t_map));
+	return (sqroot);
+}
+
+t_map	*create_map(int sqroot)
+{
+	t_map	*map;
+
+	map = (t_map *)malloc(sizeof(t_map));
 	if (!map)
 		return (NULL);
+	map->size = sqroot;
 	map->map = (char **)malloc(sqroot * sizeof(char *));
 	if (!map->map)
 		return (NULL);
@@ -112,6 +119,8 @@ t_piece *make_piece(char *buf, char letter)
 		}
 		i++;
 	}
+	tetri->x_shift = 0;
+	tetri->y_shift = 0;
 	printf(" %i %i %i %i %i %i %i %i\n", tetri->x_cord[0], tetri->y_cord[0], tetri->x_cord[1], tetri->y_cord[1], tetri->x_cord[2], tetri->y_cord[2], tetri->x_cord[3], tetri->y_cord[3]);
 	shift_piece(tetri);
 	tetri->letter = letter;
@@ -193,7 +202,8 @@ int	main(int argc, char **argv)
 	char		buf[545];
 	int			fd;
 	size_t		r_bytes;
-	t_piece	*tetris;
+	t_piece		*tetris;
+	t_map		*map;
 
 	if (argc != 2)
 		ft_putstr("usage: ./fillit source_file\n");
@@ -210,8 +220,8 @@ int	main(int argc, char **argv)
 			buf[r_bytes] = '\0';
 			tetris = read_file(r_bytes, buf);
 		}
-		//if (tetris)
-		//	solve_map(tetris);
+		if (tetris)
+			solve_map(tetris);
 		//else
 		//	ft_putstr("error\n");
 	}
