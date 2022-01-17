@@ -6,7 +6,7 @@
 /*   By: abackman <abackman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/11 12:25:09 by abackman          #+#    #+#             */
-/*   Updated: 2022/01/17 15:03:58 by abackman         ###   ########.fr       */
+/*   Updated: 2022/01/17 19:00:30 by abackman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,20 @@ void	ft_putstr(const char *s)
 		i++;
 	}
 }
+t_piece	*free_tetri(t_piece *lst)
+{
+	t_piece	*tmp;
 
-t_map	*fill_dots(t_map *map, int sqroot)
+	while (lst)
+	{
+		tmp = lst;
+		lst = lst->next;
+		free(tmp);
+	}
+	return (NULL);
+}
+
+static void	fill_dots(t_map *map, int sqroot)
 {
 	int	i;
 
@@ -40,10 +52,10 @@ t_map	*fill_dots(t_map *map, int sqroot)
 	while (i < sqroot)
 	{
 		map->map[i] = ft_strnew(sqroot);
+		printf("sqroot: %i\n\n", sqroot);
 		ft_memset(map->map[i], '.', sqroot);
 		i++;
 	}
-	return (map);
 }
 
 int	count_mapsize(t_piece *pieces)
@@ -51,7 +63,7 @@ int	count_mapsize(t_piece *pieces)
 	int		mapsize;
 	int		sqroot;
 
-	mapsize = 4 * (pieces->last_letter - 'A');
+	mapsize = 4 * (pieces->last_letter - 64);
 	sqroot = 2;
 	while (sqroot * sqroot < mapsize)
 		sqroot++;
@@ -62,15 +74,11 @@ t_map	*create_map(int sqroot)
 {
 	t_map	*map;
 
-	map = (t_map *)malloc(sizeof(t_map));
-	if (!map)
-		return (NULL);
+	map = (t_map *)ft_memalloc(sizeof(t_map));
 	map->size = sqroot;
-	map->map = (char **)malloc(sqroot * sizeof(char *));
-	if (!map->map)
-		return (NULL);
-	else
-		return (fill_dots(map, sqroot));
+	map->map = (char **)ft_memalloc(sqroot * sizeof(char *));
+	fill_dots(map, sqroot);
+	return (map);
 }
 	
 
@@ -105,7 +113,7 @@ t_piece *make_piece(char *buf, char letter)
 	x = 0;
 	y = 0;
 	tetri = (t_piece *)malloc(sizeof(t_piece));
-	if (tetri == NULL)
+	if (!tetri)
 		return (NULL);
 	while (i < 20)
 	{
@@ -119,9 +127,7 @@ t_piece *make_piece(char *buf, char letter)
 		}
 		i++;
 	}
-	tetri->x_shift = 0;
-	tetri->y_shift = 0;
-	printf(" %i %i %i %i %i %i %i %i\n", tetri->x_cord[0], tetri->y_cord[0], tetri->x_cord[1], tetri->y_cord[1], tetri->x_cord[2], tetri->y_cord[2], tetri->x_cord[3], tetri->y_cord[3]);
+	//printf(" %i %i %i %i %i %i %i %i\n", tetri->x_cord[0], tetri->y_cord[0], tetri->x_cord[1], tetri->y_cord[1], tetri->x_cord[2], tetri->y_cord[2], tetri->x_cord[3], tetri->y_cord[3]);
 	shift_piece(tetri);
 	tetri->letter = letter;
 	printf(" %i %i %i %i %i %i %i %i\n", tetri->x_cord[0], tetri->y_cord[0], tetri->x_cord[1], tetri->y_cord[1], tetri->x_cord[2], tetri->y_cord[2], tetri->x_cord[3], tetri->y_cord[3]);
@@ -192,6 +198,8 @@ t_piece	*read_file(size_t r_bytes, char *buf)
 		letter++;
 		i += 21;
 	}
+	if (!head && !next)
+		return (free_tetri(head));
 	next->next = NULL;
 	head->last_letter = next->letter;
 	return (head);
