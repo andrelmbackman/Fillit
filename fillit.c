@@ -6,39 +6,20 @@
 /*   By: abackman <abackman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/11 12:25:09 by abackman          #+#    #+#             */
-/*   Updated: 2022/01/17 19:00:30 by abackman         ###   ########.fr       */
+/*   Updated: 2022/01/18 18:19:08 by abackman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fillit.h"
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <fcntl.h>
 
-void	ft_putstr(const char *s)
-{
-	int				i;
-	unsigned char	ch;
-
-	i = 0;
-	if (s == NULL)
-		return ;
-	while (s[i] != '\0')
-	{
-		ch = (unsigned char)s[i];
-		write(1, &ch, 1);
-		i++;
-	}
-}
-t_piece	*free_tetri(t_piece *lst)
+t_piece	*free_tetri(t_piece *tetri)
 {
 	t_piece	*tmp;
 
-	while (lst)
+	while (tetri)
 	{
-		tmp = lst;
-		lst = lst->next;
+		tmp = tetri;
+		tetri = tetri->next;
 		free(tmp);
 	}
 	return (NULL);
@@ -52,7 +33,6 @@ static void	fill_dots(t_map *map, int sqroot)
 	while (i < sqroot)
 	{
 		map->map[i] = ft_strnew(sqroot);
-		printf("sqroot: %i\n\n", sqroot);
 		ft_memset(map->map[i], '.', sqroot);
 		i++;
 	}
@@ -80,7 +60,6 @@ t_map	*create_map(int sqroot)
 	fill_dots(map, sqroot);
 	return (map);
 }
-	
 
 void	shift_piece(t_piece *piece)
 {
@@ -102,7 +81,7 @@ void	shift_piece(t_piece *piece)
 	}
 }
 
-t_piece *make_piece(char *buf, char letter)
+t_piece	*make_piece(char *buf, char letter)
 {
 	t_piece		*tetri;
 	int			i;
@@ -127,11 +106,8 @@ t_piece *make_piece(char *buf, char letter)
 		}
 		i++;
 	}
-	//printf(" %i %i %i %i %i %i %i %i\n", tetri->x_cord[0], tetri->y_cord[0], tetri->x_cord[1], tetri->y_cord[1], tetri->x_cord[2], tetri->y_cord[2], tetri->x_cord[3], tetri->y_cord[3]);
 	shift_piece(tetri);
 	tetri->letter = letter;
-	printf(" %i %i %i %i %i %i %i %i\n", tetri->x_cord[0], tetri->y_cord[0], tetri->x_cord[1], tetri->y_cord[1], tetri->x_cord[2], tetri->y_cord[2], tetri->x_cord[3], tetri->y_cord[3]);
-	printf("letter: %c\n", tetri->letter);
 	return (tetri);
 }
 
@@ -144,7 +120,7 @@ int	check_links(char *buf, int i, int links)
 	return (links);
 }
 
-t_piece *check_tetri(char *buf, char letter)
+t_piece	*check_tetri(char *buf, char letter, int fd)
 {
 	int	blocks;
 	int	links;
@@ -156,29 +132,28 @@ t_piece *check_tetri(char *buf, char letter)
 	while (i < 20)
 	{
 		if (buf[i] != '.' && buf[i] != '#' && buf[i] != '\n')
-			ft_putstr("error1\n");
+			error_exit(fd);
 		if (buf[i] == '\n' && (i % 5) != 4)
-			printf("error2 %d\n", i);
+			error_exit(fd);
 		if (buf[i] == '#')
 		{
 			blocks++;
 			links = check_links(buf, i, links);
-			printf("links: %i\n", links);
 		}
 		i++;
 	}
-	printf("blocks: %i\nlinks: %i\nindex: %i\n", blocks, links, i);
 	if (blocks == 4 && (links == 3 || links == 4))
 		return (make_piece(buf, letter));
-	//else
+	else
+		error_exit(fd);
 	return (NULL);
 }
 
-t_piece	*read_file(size_t r_bytes, char *buf)
+t_piece	*read_file(size_t r_bytes, char *buf, int fd)
 {
 	t_piece		*head;
 	t_piece		*next;
-	int			i;
+	size_t		i;
 	char		letter;
 
 	i = 0;
@@ -187,22 +162,29 @@ t_piece	*read_file(size_t r_bytes, char *buf)
 	{
 		if (letter == 'A')
 		{
-			head = check_tetri(buf, letter);
+			head = check_tetri(buf, letter, fd);
 			next = head;
 		}
 		else
 		{
-			next->next = check_tetri(buf + i, letter);
+			next->next = check_tetri(buf + i, letter, fd);
 			next = next->next;
 		}
 		letter++;
 		i += 21;
+		if (!head && !next)
+			return (free_tetri(head));
 	}
-	if (!head && !next)
-		return (free_tetri(head));
 	next->next = NULL;
 	head->last_letter = next->letter;
 	return (head);
+}
+
+void	error_exit(int fd)
+{
+	close(fd);
+	ft_putendl("error");
+	exit(EXIT_FAILURE);
 }
 
 int	main(int argc, char **argv)
@@ -211,28 +193,28 @@ int	main(int argc, char **argv)
 	int			fd;
 	size_t		r_bytes;
 	t_piece		*tetris;
-	t_map		*map;
 
+	tetris = NULL;
 	if (argc != 2)
 		ft_putstr("usage: ./fillit source_file\n");
 	else
 	{
 		fd = open(argv[1], O_RDONLY);
 		if (fd < 0)
-			ft_putstr("error\n");
+			error_exit(fd);
 		else
 		{
 			r_bytes = read(fd, buf, 545);
 			if (r_bytes > 544 || r_bytes < 19)
-				return (1);
+				error_exit(fd);
 			buf[r_bytes] = '\0';
-			tetris = read_file(r_bytes, buf);
+			tetris = read_file(r_bytes, buf, fd);
 		}
 		if (tetris)
 			solve_map(tetris);
-		//else
-		//	ft_putstr("error\n");
+		else
+			error_exit(fd);
+		close(fd);
 	}
-	close(fd);
 	return (0);
 }
