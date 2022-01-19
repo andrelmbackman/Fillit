@@ -1,5 +1,5 @@
 NAME = fillit
-SRC = fillit.c solve_map.c
+SRC = fillit.c solve_map.c create_map.c check_tetri.c map_utilities.c
 OBJS = $(SRC:.c=.o)
 WRNG = -Wall -Werror -Wextra
 
