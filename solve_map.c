@@ -6,7 +6,7 @@
 /*   By: abackman <abackman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/14 16:09:25 by abackman          #+#    #+#             */
-/*   Updated: 2022/01/20 18:57:13 by abackman         ###   ########.fr       */
+/*   Updated: 2022/01/20 19:04:09 by abackman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,8 +94,6 @@ int	solver(t_map *map, t_piece *tetris, int size)
 			if (check_place(map, tetris))
 			{
 				place_piece(map, tetris, tetris->letter);
-				print_map(map, map->size);
-				write(1, "\n", 1);
 				if (solver(map, tetris->next, size))
 					return (1);
 				else

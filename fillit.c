@@ -6,7 +6,7 @@
 /*   By: abackman <abackman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/11 12:25:09 by abackman          #+#    #+#             */
-/*   Updated: 2022/01/20 18:56:20 by abackman         ###   ########.fr       */
+/*   Updated: 2022/01/20 19:02:52 by abackman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ t_piece	*free_tetri(t_piece *tetri)
 ** a letter in the alphabetical order. 
 */
 
-t_piece	*make_piecelist(size_t r_bytes, size_t i, char *buf, int fd)
+t_piece	*make_piecelist(size_t r_bytes, size_t i, char *buf)
 {
 	t_piece	*head;
 	t_piece	*next;
@@ -44,12 +44,12 @@ t_piece	*make_piecelist(size_t r_bytes, size_t i, char *buf, int fd)
 	{
 		if (letter == 'A')
 		{
-			head = check_tetri(buf, letter, fd);
+			head = check_tetri(buf, letter);
 			next = head;
 		}
 		else
 		{
-			next->next = check_tetri(buf + i, letter, fd);
+			next->next = check_tetri(buf + i, letter);
 			next = next->next;
 		}
 		letter++;
@@ -76,12 +76,12 @@ t_piece	*read_file(size_t r_bytes, char *buf, int fd)
 	i = 0;
 	r_bytes = read(fd, buf, 547);
 	if (r_bytes > 546 || r_bytes < 19)
-		error_exit(fd);
+		error_exit();
 	buf[r_bytes] = '\0';
-	return (make_piecelist(r_bytes, i, buf, fd));
+	return (make_piecelist(r_bytes, i, buf));
 }
 
-void	error_exit()
+void	error_exit(void)
 {	
 	ft_putendl("error");
 	exit(EXIT_FAILURE);
@@ -102,12 +102,12 @@ int	main(int argc, char **argv)
 	{	
 		fd = open(argv[1], O_RDONLY);
 		if (fd < 0)
-			error_exit(fd);
+			error_exit();
 		tetris = read_file(r_bytes, buf, fd);
 		if (tetris)
 			solve_map(tetris);
 		else
-			error_exit(fd);
+			error_exit();
 		close(fd);
 	}
 	return (0);

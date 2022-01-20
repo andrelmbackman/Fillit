@@ -6,7 +6,7 @@
 /*   By: abackman <abackman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/11 12:25:49 by abackman          #+#    #+#             */
-/*   Updated: 2022/01/20 18:57:43 by abackman         ###   ########.fr       */
+/*   Updated: 2022/01/20 19:02:32 by abackman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	solve_map(t_piece *tetris);
 void	print_map(t_map *map, int size);
 void	free_map(t_map *map, int size);
 void	place_piece(t_map *map, t_piece *tetris, char letter);
-void	error_exit();
+void	error_exit(void);
 int		count_mapsize(t_piece *pieces);
 t_map	*create_map(int sqroot);
 t_piece	*free_tetri(t_piece *tetris);
