@@ -10,6 +10,7 @@ ft_strncat.c ft_strsub.c ft_isalpha.c ft_lstiter.c ft_memmove.c ft_putstr.c\
 ft_strequ.c ft_strncmp.c ft_strtrim.c ft_isascii.c ft_lstmap.c ft_memset.c\
 ft_putstr_fd.c ft_striter.c ft_strncpy.c ft_tolower.c ft_isdigit.c ft_lstnew.c\
 ft_primenbr.c ft_strcat.c ft_striteri.c ft_strnequ.c ft_toupper.c
+OBJS = $(SRC:.c=.o)
 WRNG = -Wall -Werror -Wextra
 
 .PHONY: all clean fclean re
@@ -18,11 +19,11 @@ all: $(NAME)
 
 $(NAME):
 	gcc $(WRNG) -c $(SRC)
-	ar rc $(NAME) *.o
+	ar rc $(NAME) $(OBJS)
 	ranlib $(NAME)
 
 clean:
-	/bin/rm -f *.o
+	/bin/rm -f $(OBJS)
 
 fclean: clean
 	/bin/rm -f $(NAME)

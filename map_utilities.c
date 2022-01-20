@@ -6,7 +6,7 @@
 /*   By: abackman <abackman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 13:04:57 by abackman          #+#    #+#             */
-/*   Updated: 2022/01/19 13:32:06 by abackman         ###   ########.fr       */
+/*   Updated: 2022/01/19 13:50:26 by acamaras         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,14 +36,19 @@ void	free_map(t_map *map, int size)
 	ft_memdel((void **)&map);
 }
 
+/*
+** Sets the given character (letter) to the corresponding
+** coordinates of the tetrimino (tetris) on the map.
+*/
+
 void	place_piece(t_map *map, t_piece *tetris, char letter)
 {
-	map->map[tetris->y_cord[0] + tetris->y_shift]\
+	map->map[tetris->y_cord[0] + tetris->y_shift] \
 	[tetris->x_cord[0] + tetris->x_shift] = letter;
-	map->map[tetris->y_cord[1] + tetris->y_shift]\
+	map->map[tetris->y_cord[1] + tetris->y_shift] \
 	[tetris->x_cord[1] + tetris->x_shift] = letter;
-	map->map[tetris->y_cord[2] + tetris->y_shift]\
+	map->map[tetris->y_cord[2] + tetris->y_shift] \
 	[tetris->x_cord[2] + tetris->x_shift] = letter;
-	map->map[tetris->y_cord[3] + tetris->y_shift]\
+	map->map[tetris->y_cord[3] + tetris->y_shift] \
 	[tetris->x_cord[3] + tetris->x_shift] = letter;
 }
