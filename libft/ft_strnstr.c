@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strnstr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abackman <abackman@student.42.fr>          +#+  +:+       +#+        */
+/*   By: abackman <abackman@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/08 13:35:56 by abackman          #+#    #+#             */
-/*   Updated: 2021/11/29 20:24:37 by abackman         ###   ########.fr       */
+/*   Updated: 2022/02/09 14:58:00 by abackman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,7 @@
 static	int	ft_checkstrn(const char *h, const char *n, size_t i, size_t len)
 {
 	size_t	j;
-	size_t	orig_len;
 
-	orig_len = len;
 	while (i < len && h[i] != '\0')
 	{
 		j = 0;
