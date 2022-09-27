@@ -1,3 +1,6 @@
+# Fillit
+#### Pair project created in collaboration with Anamaria Camarasan https://github.com/acamaras0
+
 Fillit is a space optimization algorithm that finds the smallest square in which it can place a number (1-26) of given tetrominos.
 Since this algorithm is based on Tetris, these will be called tetriminos from now on.
 
