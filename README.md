@@ -10,8 +10,10 @@ and pound signs '#', indicating a square. Each tetrimino will be represented in 
 ![tetriminos_horizontal](https://user-images.githubusercontent.com/88145164/153220447-92e140e9-7c12-48d3-bd36-fd7f81d4acd4.png)
 
 This program is given a file as an argument. The file must contain between 1-26 valid tetriminos, all followed by a
-newline character '\n', otherwise it will exit and display an error message. Given a valid file, it will find the
-smallest possible square to place these pieces without rotating them, using a recursive backtracking algorithm.
+newline character '\n', otherwise it will exit and display an error message.
+
+Given a valid file, it will find the smallest possible square to place these pieces without rotating them, 
+using a <b>recursive backtracking algorithm</b>.
 The output will consist of dots for empty space, and each tetrimino will be represented with a capital letter,
 assigned in the order the pieces are presented in the file.
 
